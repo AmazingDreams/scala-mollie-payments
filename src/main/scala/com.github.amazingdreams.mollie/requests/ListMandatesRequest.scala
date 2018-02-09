@@ -5,7 +5,7 @@ import play.api.libs.json.Json
 case class ListMandatesRequest(customerId: String,
                                offset: Int = 0,
                                count: Int = 30)
-  extends MollieRequest {
+  extends MollieRequest[ListMandatesResponse] {
   import Mandate.mandateReads
 
   override def path: String = s"customers/$customerId/mandates"

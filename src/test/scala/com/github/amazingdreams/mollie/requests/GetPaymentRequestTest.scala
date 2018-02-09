@@ -22,18 +22,16 @@ class GetPaymentRequestTest extends MollieIntegrationSpec {
 
     assert(createResult.isRight)
 
-    createResult.right.map {
-      case payment: Payment =>
-        val getResult = Await.result(mollieClient.request(GetPaymentRequest(
-          id = payment.id
-        )), Duration.Inf)
+    createResult.right.map { createPayment =>
+      val getResult = Await.result(mollieClient.request(GetPaymentRequest(
+        id = createPayment.id
+      )), Duration.Inf)
 
-        assert(getResult.isRight)
+      assert(getResult.isRight)
 
-        getResult.right.map {
-          case getPayment: Payment =>
-            assert(getPayment.id == payment.id)
-        }
+      getResult.right.map { getPayment =>
+        assert(getPayment.id == createPayment.id)
+      }
     }
   }
 }

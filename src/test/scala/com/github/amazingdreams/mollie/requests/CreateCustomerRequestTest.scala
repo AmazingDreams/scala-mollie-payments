@@ -19,11 +19,10 @@ class CreateCustomerRequestTest extends MollieIntegrationSpec {
 
     assert(result.isRight == true)
 
-    result.right.map {
-      case c: Customer =>
-        assert(c.id != "")
-        assert(c.name.get == "MR. Test")
-        assert(c.email.get == "test@test.nl")
+    result.right.map { customer =>
+      assert(customer.id != "")
+      assert(customer.name.get == "MR. Test")
+      assert(customer.email.get == "test@test.nl")
     }
   }
 

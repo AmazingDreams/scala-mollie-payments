@@ -11,8 +11,9 @@ case class CreatePaymentRequest(amount: Double,
                                 locale: Option[String] = None,
                                 metadata: Option[Map[String, String]] = None,
                                 recurringType: Option[String] = None,
+                                customerId: Option[String] = None,
                                 mandateId: Option[String] = None)
-  extends MollieRequest {
+  extends MollieRequest[Payment] {
   override def method: RequestMethod = RequestMethod.POST
   override def path: String = "payments"
   override def postData: JsObject = Json.obj(
@@ -23,6 +24,7 @@ case class CreatePaymentRequest(amount: Double,
     "locale" -> locale,
     "metadata" -> metadata,
     "recurringType" -> recurringType,
+    "customerId" -> customerId,
     "mandateId" -> mandateId
   )
   override def responseReads = Payment.paymentReads

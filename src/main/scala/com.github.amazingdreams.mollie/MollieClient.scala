@@ -27,13 +27,13 @@ object MollieHttp extends BaseHttp(
 class MollieClient(apiKey: String, testMode: Boolean = true) {
   import MollieClient._
 
-  def request(mollieRequest: MollieRequest)
-             (implicit ec: ExecutionContext): Future[Either[Seq[String], MollieResponse]] = {
+  def request[T](mollieRequest: MollieRequest[T])
+                (implicit ec: ExecutionContext): Future[Either[Seq[String], T]] = {
     val httpRequest = createHttpRequest(mollieRequest)
 
     Future {
       blocking {
-        handleHttpResponse(
+        handleHttpResponse[T](
           mollieRequest = mollieRequest,
           response = httpRequest.asBytes
         )
@@ -41,7 +41,7 @@ class MollieClient(apiKey: String, testMode: Boolean = true) {
     }
   }
 
-  private def createHttpRequest(mollieRequest: MollieRequest): HttpRequest = {
+  private def createHttpRequest[T](mollieRequest: MollieRequest[T]): HttpRequest = {
     val localRequest = MollieHttp(buildPath(mollieRequest.path))
       .method(mollieRequest.method.toString)
       .header(API_KEY_HEADER, s"Bearer $apiKey")
@@ -56,8 +56,8 @@ class MollieClient(apiKey: String, testMode: Boolean = true) {
     }
   }
 
-  private def handleHttpResponse(mollieRequest: MollieRequest,
-                                 response: HttpResponse[Array[Byte]]): Either[Seq[String], MollieResponse] =
+  private def handleHttpResponse[T](mollieRequest: MollieRequest[T],
+                                    response: HttpResponse[Array[Byte]]): Either[Seq[String], T] =
     if (response.code == mollieRequest.successResponseCode) {
       val json = Json.parse(response.body)
       val parsed = mollieRequest.responseReads.reads(json)

@@ -27,11 +27,10 @@ class CreatePaymentRequestTest extends MollieIntegrationSpec {
 
     assert(result.isRight)
 
-    result.right.map {
-      case response: Payment =>
-        assert(response.id != "")
-        assert(response.amount == 10d)
-        assert(response.links.paymentUrl != null)
+    result.right.map { payment =>
+      assert(payment.id != "")
+      assert(payment.amount == 10d)
+      assert(payment.links.paymentUrl != null)
     }
   }
 }

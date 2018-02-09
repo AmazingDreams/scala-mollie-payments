@@ -19,12 +19,16 @@ class GetMandatesRequestTest extends MollieIntegrationSpec {
 
     assert(createResult.isRight)
 
-    val customer = createResult.right.get.asInstanceOf[Customer]
+    val customer = createResult.right.get
 
     val result = Await.result(mollieClient.request(ListMandatesRequest(
       customerId = customer.id
     )), Duration.Inf)
 
     assert(result.isRight)
+
+    result.right.map { listMandatesResult =>
+      assert(listMandatesResult.count == 0)
+    }
   }
 }

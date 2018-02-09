@@ -1,15 +1,12 @@
 package com.github.amazingdreams.mollie.objects
 
 import com.github.amazingdreams.mollie.requests.MollieResponse
+import com.github.amazingdreams.mollie.utils.json.ReadUtils
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
 
 object Payment {
-  lazy implicit val readDoubleFromString = Reads[Either[String, BigDecimal]] {
-    case JsNumber(a) => JsSuccess(Right(a))
-    case JsString(a) => JsSuccess(Left(a))
-    case _ => JsError("Type not supported")
-  }
+  import ReadUtils.readDoubleFromString
 
   lazy implicit val paymentLinksReads = Json.reads[PaymentLinks]
   lazy implicit val paymentReads: Reads[Payment] = (
@@ -21,6 +18,9 @@ object Payment {
     )) and
     (JsPath \ "description").read[String] and
     (JsPath \ "metadata").readNullable[Map[String, String]] and
+    (JsPath \ "customerId").readNullable[String] and
+    (JsPath \ "recurringType").readNullable[String] and
+    (JsPath \ "subsciptionId").readNullable[String] and
     (JsPath \ "links").read[PaymentLinks]
   )(Payment.apply _)
 }
@@ -29,10 +29,13 @@ case class Payment(id: String,
                    status: String,
                    amount: Double,
                    description: String,
-                   metadata: Option[Map[String, String]],
+                   metadata: Option[Map[String, String]] = None,
+                   customerId: Option[String] = None,
+                   recurringType: Option[String] = None,
+                   subscriptionId: Option[String] = None,
                    links: PaymentLinks)
   extends MollieResponse
 
-case class PaymentLinks(paymentUrl: String,
+case class PaymentLinks(paymentUrl: Option[String],
                         redirectUrl: String,
                         webhookUrl: String)

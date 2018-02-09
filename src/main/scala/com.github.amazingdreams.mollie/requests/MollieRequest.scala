@@ -11,12 +11,12 @@ object RequestMethod extends Enumeration {
   val DELETE = Value("DELETE")
 }
 
-trait MollieRequest {
+trait MollieRequest[T] {
   def method: RequestMethod = RequestMethod.GET
   def params: Seq[(String, String)] = Seq.empty
   def path: String
   def postData: JsObject = JsObject.empty
-  def responseReads: Reads[_ <: MollieResponse]
+  def responseReads: Reads[T]
   def successResponseCode: Int = 200
 }
 trait MollieResponse
