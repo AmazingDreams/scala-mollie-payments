@@ -1,4 +1,5 @@
 package com.github.amazingdreams.mollie.requests
+
 import com.github.amazingdreams.mollie.objects.Payment
 import com.github.amazingdreams.mollie.requests.RequestMethod.RequestMethod
 import play.api.libs.json._

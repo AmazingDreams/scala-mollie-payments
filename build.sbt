@@ -15,3 +15,16 @@ lazy val root = (project in file(".")).
       mockito % Test
     )
   )
+
+homepage := Some(url("https://github.com/AmazingDreams/scala-mollie-payments"))
+scmInfo := Some(ScmInfo(url("https://github.com/AmazingDreams/scala-mollie-payments"),
+                            "git@github.com:AmazingDreams/scala-mollie-payments.git"))
+licenses += ("MIT", url("https://opensource.org/licenses/MIT"))
+publishMavenStyle := true
+
+publishTo := Some(
+  if (isSnapshot.value)
+    Opts.resolver.sonatypeSnapshots
+  else
+    Opts.resolver.sonatypeStaging
+)

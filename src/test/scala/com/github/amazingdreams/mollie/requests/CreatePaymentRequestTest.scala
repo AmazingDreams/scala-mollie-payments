@@ -15,8 +15,8 @@ class CreatePaymentRequestTest extends MollieIntegrationSpec {
     val result = Await.result(mollieClient.request(CreatePaymentRequest(
       amount = 10d,
       description = "test",
-      redirectUrl = "http://localhost.example.com/redirect",
-      webhookUrl = "http://localhost.example.com/webhook"
+      redirectUrl = "http://example.com/redirect",
+      webhookUrl = "http://example.com/webhook"
     )), Duration.Inf)
 
     if (result.isLeft) {
