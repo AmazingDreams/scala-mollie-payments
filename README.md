@@ -5,14 +5,11 @@ Make sure to check out:
 - https://www.mollie.com/en/docs/
 
 ## Add to your project
-Currently `scala-mollie-payments` is not available on any repository. You can add this git repository manually:
+Currently `scala-mollie-payments` is available Sonatype Snapshots:
 
 ```scala
-lazy val scalaMolliePayments = ProjectRef(uri("git:https://github.com/AmazingDreams/scala-mollie-payments.git#master"), "scala-mollie-payments")
-
-// Ensure you add it as a dependency
-lazy val root = (project in file("."))
-  .dependsOn(scalaMolliePayments)
+resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
+libraryDependencies += "com.github.amazingdreams" %% "scala-mollie-payments" % "0.1.0-SNAPSHOT"
 ```
 
 ## Connecting to mollie
