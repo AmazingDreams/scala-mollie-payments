@@ -1,29 +1,46 @@
 package com.github.amazingdreams.mollie.requests
 
-import com.github.amazingdreams.mollie.objects.Customer
-import com.github.amazingdreams.mollie.testutils.MollieIntegrationSpec
+import org.scalatest.FunSuite
+import play.api.libs.json.Json
 
-import scala.concurrent.Await
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration.Duration
+class CreateCustomerRequestTest extends FunSuite {
 
-class CreateCustomerRequestTest extends MollieIntegrationSpec {
+  test("has correct path") {
+    val request = new CreateCustomerRequest()
 
-  behavior of "CreateCustomerRequest"
-
-  it should "Create a customer" in {
-    val result = Await.result(mollieClient.request(CreateCustomerRequest(
-      name = Some("MR. Test"),
-      email = Some("test@test.nl")
-    )), Duration.Inf)
-
-    assert(result.isRight == true)
-
-    result.right.map { customer =>
-      assert(customer.id != "")
-      assert(customer.name.get == "MR. Test")
-      assert(customer.email.get == "test@test.nl")
-    }
+    assert(request.path == "customers")
   }
 
+  test("has correct params") {
+    val request = new CreateCustomerRequest(
+      name = Some("T. Test"),
+      email = Some("test@test.nl")
+    )
+
+    assert((request.postData \ "name").as[String] == "T. Test")
+    assert((request.postData \ "email").as[String] == "test@test.nl")
+  }
+
+  test("can decode sample response") {
+    val responseJson =
+      """
+        |{
+        |    "resource": "customer",
+        |    "id": "cst_8wmqcHMN4U",
+        |    "mode": "test",
+        |    "name": "Customer A",
+        |    "email": "customer@example.org",
+        |    "locale": "nl_NL",
+        |    "metadata": null,
+        |    "recentlyUsedMethods": [],
+        |    "createdDatetime": "2016-04-06T13:10:19.0Z"
+        |}
+      """.stripMargin
+
+    val request = new CreateCustomerRequest()
+    val customer = request.responseReads.reads(Json.parse(responseJson)).get
+
+    assert(customer.name.get == "Customer A")
+    assert(customer.email.get == "customer@example.org")
+  }
 }

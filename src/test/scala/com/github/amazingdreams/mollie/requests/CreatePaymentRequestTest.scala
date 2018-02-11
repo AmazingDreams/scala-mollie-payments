@@ -2,35 +2,74 @@ package com.github.amazingdreams.mollie.requests
 
 import com.github.amazingdreams.mollie.objects.Payment
 import com.github.amazingdreams.mollie.testutils.MollieIntegrationSpec
+import org.scalatest.FunSuite
+import play.api.libs.json.Json
 
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 
-class CreatePaymentRequestTest extends MollieIntegrationSpec {
+class CreatePaymentRequestTest extends FunSuite {
 
-  behavior of "CreatePaymentRequest"
-
-  it should "create a payment" in {
-    val result = Await.result(mollieClient.request(CreatePaymentRequest(
+  test("has correct path") {
+    val request = CreatePaymentRequest(
       amount = 10d,
       description = "test",
       redirectUrl = "http://example.com/redirect",
       webhookUrl = "http://example.com/webhook"
-    )), Duration.Inf)
+    )
+    assert(request.path == "payments")
+  }
 
-    if (result.isLeft) {
-      result.left.map { errors =>
-        println(errors)
-      }
-    }
+  test("has correct params") {
+    val request = CreatePaymentRequest(
+      amount = 10d,
+      description = "test",
+      redirectUrl = "http://example.com/redirect",
+      webhookUrl = "http://example.com/webhook"
+    )
 
-    assert(result.isRight)
+    assert((request.postData \ "amount").as[Double] == 10d)
+    assert((request.postData \ "description").as[String] == "test")
+    assert((request.postData \ "redirectUrl").as[String] == "http://example.com/redirect")
+    assert((request.postData \ "webhookUrl").as[String] == "http://example.com/webhook")
+  }
 
-    result.right.map { payment =>
-      assert(payment.id != "")
-      assert(payment.amount == 10d)
-      assert(payment.links.paymentUrl != null)
-    }
+  test("can decode sample response") {
+    val responseJson =
+      """
+        |{
+        |    "resource":        "payment",
+        |    "id":              "tr_7UhSN1zuXS",
+        |    "mode":            "test",
+        |    "createdDatetime": "2018-02-08T16:46:53.0Z",
+        |    "status":          "open",
+        |    "expiryPeriod":    "PT15M",
+        |    "amount":          "10.00",
+        |    "description":     "My first payment",
+        |    "metadata": {
+        |        "order_id": "12345"
+        |    },
+        |    "locale": "nl",
+        |    "profileId": "pfl_QkEhN94Ba",
+        |    "links": {
+        |        "paymentUrl":  "https://www.mollie.com/payscreen/select-method/7UhSN1zuXS",
+        |        "redirectUrl": "https://webshop.example.org/order/12345/",
+        |        "webhookUrl":  "https://webshop.example.org/payments/webhook/"
+        |    }
+        |}
+      """.stripMargin
+
+    val request = CreatePaymentRequest(
+      amount = 10d,
+      description = "test",
+      redirectUrl = "http://example.com/redirect",
+      webhookUrl = "http://example.com/webhook"
+    )
+
+    val response = request.responseReads.reads(Json.parse(responseJson)).get
+
+    assert(response.amount == 10d)
+    assert(response.links.paymentUrl.isDefined)
   }
 }

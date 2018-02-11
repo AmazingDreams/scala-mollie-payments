@@ -6,7 +6,8 @@ object Mandate {
   lazy implicit val mandateReads = Json.reads[Mandate]
 }
 
-case class Mandate(status: String,
+case class Mandate(id: String,
+                   status: String,
                    method: String,
                    customerId: String,
                    details: Map[String, String],

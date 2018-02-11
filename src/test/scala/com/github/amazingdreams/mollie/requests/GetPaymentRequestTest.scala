@@ -1,37 +1,50 @@
 package com.github.amazingdreams.mollie.requests
 
-import com.github.amazingdreams.mollie.objects.Payment
-import com.github.amazingdreams.mollie.testutils.MollieIntegrationSpec
+import org.scalatest.FunSuite
+import play.api.libs.json.Json
 
-import scala.concurrent.Await
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration.Duration
+class GetPaymentRequestTest extends FunSuite {
 
-class GetPaymentRequestTest extends MollieIntegrationSpec {
+  test("has correct path") {
+    val request = GetPaymentRequest(id = "payment_id_123")
 
-  behavior of "GetPaymentRequest"
+    assert(request.path == "payments/payment_id_123")
+  }
 
-  it should "Get a payment" in {
-    // First create the payment
-    val createResult = Await.result(mollieClient.request(CreatePaymentRequest(
-      amount = 10d,
-      description = "test payment",
-      redirectUrl = "https://example.com/redirect",
-      webhookUrl = "https://example.com/webhook"
-    )), Duration.Inf)
+  test("can parse response") {
+    val responseJson =
+      """
+        |{
+        |    "resource": "payment",
+        |    "id": "tr_WDqYK6vllg",
+        |    "mode": "test",
+        |    "createdDatetime": "2018-02-08T16:37:34.0Z",
+        |    "status": "paid",
+        |    "paidDatetime": "2018-02-08T16:42:17.0Z",
+        |    "amount": "35.07",
+        |    "description": "Order 33",
+        |    "method": "ideal",
+        |    "metadata": {
+        |        "order_id": "33"
+        |    },
+        |    "details": {
+        |        "consumerName": "Hr E G H K\u00fcppers en\/of MW M.J. K\u00fcppers-Veeneman",
+        |        "consumerAccount": "NL53INGB0618365937",
+        |        "consumerBic": "INGBNL2A"
+        |    },
+        |    "locale": "nl",
+        |    "profileId": "pfl_QkEhN94Ba",
+        |    "links": {
+        |        "webhookUrl": "https://webshop.example.org/payments/webhook",
+        |        "redirectUrl": "https://webshop.example.org/order/33/"
+        |    }
+        |}
+      """.stripMargin
 
-    assert(createResult.isRight)
+    val request = GetPaymentRequest(id = "payment_id_123")
+    val response = request.responseReads.reads(Json.parse(responseJson)).get
 
-    createResult.right.map { createPayment =>
-      val getResult = Await.result(mollieClient.request(GetPaymentRequest(
-        id = createPayment.id
-      )), Duration.Inf)
-
-      assert(getResult.isRight)
-
-      getResult.right.map { getPayment =>
-        assert(getPayment.id == createPayment.id)
-      }
-    }
+    assert(response.id == "tr_WDqYK6vllg")
+    assert(response.metadata.get("order_id") == "33")
   }
 }

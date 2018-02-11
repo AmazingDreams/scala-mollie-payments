@@ -3,6 +3,6 @@ package com.github.amazingdreams.mollie.requests
 import com.github.amazingdreams.mollie.objects.Payment
 
 case class GetPaymentRequest(id: String) extends MollieRequest[Payment] {
-  override def path: String = s"/payments/$id"
+  override def path: String = s"payments/$id"
   override def responseReads = Payment.paymentReads
 }

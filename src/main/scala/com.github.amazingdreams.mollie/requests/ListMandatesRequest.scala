@@ -4,7 +4,7 @@ import play.api.libs.json.Json
 
 case class ListMandatesRequest(customerId: String,
                                offset: Int = 0,
-                               count: Int = 30)
+                               count: Int = 250)
   extends MollieRequest[ListMandatesResponse] {
   import Mandate.mandateReads
 

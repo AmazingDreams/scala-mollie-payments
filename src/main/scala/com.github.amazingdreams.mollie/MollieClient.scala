@@ -12,7 +12,16 @@ object MollieClient {
   final val API_VERSION = "v1"
   final val API_KEY_HEADER = "Authorization"
 
-  def buildPath(path: String) = s"$BASE_URL/$API_VERSION/$path"
+  def buildPath(path: String) = {
+    val cleanedPath = {
+      if (path.startsWith("/")) {
+        path.tail
+      }
+      path
+    }
+
+    s"$BASE_URL/$API_VERSION/$cleanedPath"
+  }
 }
 
 object MollieHttp extends BaseHttp(
