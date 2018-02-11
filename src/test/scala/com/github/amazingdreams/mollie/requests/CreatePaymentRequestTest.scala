@@ -1,13 +1,7 @@
 package com.github.amazingdreams.mollie.requests
 
-import com.github.amazingdreams.mollie.objects.Payment
-import com.github.amazingdreams.mollie.testutils.MollieIntegrationSpec
 import org.scalatest.FunSuite
 import play.api.libs.json.Json
-
-import scala.concurrent.Await
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration.Duration
 
 class CreatePaymentRequestTest extends FunSuite {
 

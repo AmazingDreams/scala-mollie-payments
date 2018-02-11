@@ -17,6 +17,7 @@ object MollieClient {
       if (path.startsWith("/")) {
         path.tail
       }
+
       path
     }
 
