@@ -24,7 +24,7 @@ trait CreatePaymentRequestTrait extends MollieRequest[Payment] {
     "redirectUrl" -> redirectUrl,
     "webhookUrl" -> webhookUrl,
     "locale" -> locale,
-    "paymentMethod" -> paymentMethod,
+    "method" -> paymentMethod,
     "metadata" -> metadata,
     "recurringType" -> recurringType,
     "customerId" -> customerId,
