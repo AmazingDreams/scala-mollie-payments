@@ -4,7 +4,7 @@ import play.api.libs.json._
 import play.api.libs.functional.syntax._
 
 object Subscription {
-  import com.github.amazingdreams.mollie.utils.json.ReadUtils.readDoubleFromString
+  import com.github.amazingdreams.mollie.utils.json.ReadUtils.readBigDecimalFromString
 
   implicit val subscriptionLinkReads = Json.reads[SubscriptionLinks]
   implicit val subscriptionReads: Reads[Subscription] = (
@@ -14,8 +14,8 @@ object Subscription {
     (JsPath \ "createdDatetime").read[String] and
     (JsPath \ "status").read[String] and
     (JsPath \ "amount").read[Either[String, BigDecimal]].map(_.fold(
-      str => str.toDouble,
-      bd => bd.toDouble
+      str => BigDecimal(str),
+      bd => bd
     )) and
     (JsPath \ "times").readNullable[Int] and
     (JsPath \ "interval").read[String] and
@@ -31,7 +31,7 @@ case class Subscription(id: String,
                         mode: String,
                         createdDatetime: String,
                         status: String,
-                        amount: Double,
+                        amount: BigDecimal,
                         times: Option[Int],
                         interval: String,
                         description: String,

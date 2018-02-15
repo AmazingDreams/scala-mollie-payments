@@ -6,15 +6,15 @@ import play.api.libs.json._
 import play.api.libs.functional.syntax._
 
 object Payment {
-  import ReadUtils.readDoubleFromString
+  import ReadUtils.readBigDecimalFromString
 
   lazy implicit val paymentLinksReads = Json.reads[PaymentLinks]
   lazy implicit val paymentReads: Reads[Payment] = (
     (JsPath \ "id").read[String] and
     (JsPath \ "status").read[String] and
     (JsPath \ "amount").read[Either[String, BigDecimal]].map(_.fold(
-      str => str.toDouble,
-      bd => bd.toDouble
+      str => BigDecimal(str),
+      bd => bd
     )) and
     (JsPath \ "description").read[String] and
     (JsPath \ "metadata").readNullable[Map[String, String]] and
@@ -27,7 +27,7 @@ object Payment {
 
 case class Payment(id: String,
                    status: String,
-                   amount: Double,
+                   amount: BigDecimal,
                    description: String,
                    metadata: Option[Map[String, String]] = None,
                    customerId: Option[String] = None,
