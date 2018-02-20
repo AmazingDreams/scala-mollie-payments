@@ -42,8 +42,8 @@ case class Payment(id: String,
   extends MollieResponse
 
 case class PaymentLinks(paymentUrl: Option[String],
-                        redirectUrl: String,
-                        webhookUrl: String)
+                        redirectUrl: Option[String],
+                        webhookUrl: Option[String])
 
 object RecurringType extends Enumeration {
   type RecurringType = Value
