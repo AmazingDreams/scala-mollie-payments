@@ -1,5 +1,6 @@
 package com.github.amazingdreams.mollie.objects
 
+import com.github.amazingdreams.mollie.objects.PaymentStatus.PaymentStatus
 import com.github.amazingdreams.mollie.objects.RecurringType.RecurringType
 import com.github.amazingdreams.mollie.requests.MollieResponse
 import com.github.amazingdreams.mollie.utils.json.ReadUtils
@@ -9,11 +10,13 @@ import play.api.libs.functional.syntax._
 object Payment {
   import ReadUtils.readBigDecimalFromString
 
+  implicit val paymentStatusReads = Reads.enumNameReads(PaymentStatus)
   implicit val recurringTypeReads = Reads.enumNameReads(RecurringType)
   implicit val paymentLinksReads = Json.reads[PaymentLinks]
+
   implicit val paymentReads: Reads[Payment] = (
     (JsPath \ "id").read[String] and
-    (JsPath \ "status").read[String] and
+    (JsPath \ "status").read[PaymentStatus] and
     (JsPath \ "amount").read[Either[String, BigDecimal]].map(_.fold(
       str => BigDecimal(str),
       bd => bd
@@ -28,7 +31,7 @@ object Payment {
 }
 
 case class Payment(id: String,
-                   status: String,
+                   status: PaymentStatus,
                    amount: BigDecimal,
                    description: String,
                    metadata: Option[Map[String, String]] = None,
@@ -47,4 +50,18 @@ object RecurringType extends Enumeration {
 
   val First = Value("first")
   val Recurring = Value("recurring")
+}
+
+object PaymentStatus extends Enumeration {
+  type PaymentStatus = Value
+
+  val Cancelled = Value("cancelled")
+  val ChargedBack = Value("charged_back")
+  val Expired = Value("expired")
+  val Failed = Value("failed")
+  val Open = Value("open")
+  val Paid = Value("paid")
+  val Paidout = Value("paidout")
+  val Pending = Value("pending")
+  val Refunded = Value("refunded")
 }
