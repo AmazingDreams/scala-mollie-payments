@@ -1,6 +1,7 @@
 package com.github.amazingdreams.mollie.requests
 
 import com.github.amazingdreams.mollie.objects.Payment
+import com.github.amazingdreams.mollie.objects.RecurringType.RecurringType
 import com.github.amazingdreams.mollie.requests.RequestMethod.RequestMethod
 import play.api.libs.json._
 
@@ -12,7 +13,7 @@ trait CreatePaymentRequestTrait extends MollieRequest[Payment] {
   def locale: Option[String]
   def paymentMethod: Option[String]
   def metadata: Option[Map[String, String]]
-  def recurringType: Option[String]
+  def recurringType: Option[RecurringType]
   def customerId: Option[String]
   def mandateId: Option[String]
 
@@ -41,7 +42,7 @@ case class CreatePaymentRequest(amount: Double,
                                 locale: Option[String] = None,
                                 paymentMethod: Option[String] = None,
                                 metadata: Option[Map[String, String]] = None,
-                                recurringType: Option[String] = None,
+                                recurringType: Option[RecurringType] = None,
                                 customerId: Option[String] = None,
                                 mandateId: Option[String] = None)
   extends CreatePaymentRequestTrait
@@ -53,7 +54,7 @@ case class CreatePaymentIdealRequest(amount: Double,
                                      issuer: Option[String],
                                      locale: Option[String] = None,
                                      metadata: Option[Map[String, String]] = None,
-                                     recurringType: Option[String] = None,
+                                     recurringType: Option[RecurringType] = None,
                                      customerId: Option[String] = None,
                                      mandateId: Option[String] = None)
   extends CreatePaymentRequestTrait {
