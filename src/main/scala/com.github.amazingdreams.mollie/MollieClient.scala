@@ -7,9 +7,9 @@ import scala.concurrent.{ExecutionContext, Future, blocking}
 import scalaj.http.{BaseHttp, HttpConstants, HttpRequest, HttpResponse}
 
 object MollieClient {
-  final val CLIENT_VERSION = "0.1.0-SNAPSHOT"
+  final val CLIENT_VERSION = "0.2.0-SNAPSHOT"
   final val BASE_URL = "https://api.mollie.nl"
-  final val API_VERSION = "v1"
+  final val API_VERSION = "v2"
   final val API_KEY_HEADER = "Authorization"
 
   def buildPath(path: String) = {

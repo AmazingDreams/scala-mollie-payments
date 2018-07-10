@@ -1,12 +1,13 @@
 package com.github.amazingdreams.mollie.requests
 
+import com.github.amazingdreams.mollie.objects.Amount
 import org.scalatest.FunSuite
 
 class CreatePaymentIdealRequestTest extends FunSuite {
 
   test("has proper postData") {
     val request = CreatePaymentIdealRequest(
-      amount = 10d,
+      amount = Amount("EUR", "10.00"),
       description = "test",
       redirectUrl = "https://example.com/redirect",
       webhookUrl = "https://example.com/webhook",

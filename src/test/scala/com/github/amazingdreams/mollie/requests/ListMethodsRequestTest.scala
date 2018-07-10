@@ -1,5 +1,6 @@
 package com.github.amazingdreams.mollie.requests
 
+import com.github.amazingdreams.mollie.objects.Amount
 import org.scalatest.FunSuite
 import play.api.libs.json.Json
 
@@ -13,50 +14,52 @@ class ListMethodsRequestTest extends FunSuite {
 
   test("has correct parameters") {
     val request = ListMethodsRequest(
-      count = 10,
-      offset = 25
+      amount = Some(Amount(value = "10.00", currency = "USD"))
     )
     val paramsMap = request.params.toMap
 
-    assert(paramsMap("count") == "10")
-    assert(paramsMap("offset") == "25")
+    assert(paramsMap("amount[value]") == "10.00")
+    assert(paramsMap("amount[currency]") == "USD")
   }
 
   test("can decode sample response") {
     val responseJson =
       """
         |{
-        |    "totalCount": 2,
-        |    "offset": 0,
-        |    "count": 2,
-        |    "data": [
-        |        {
-        |            "resource": "method",
-        |            "id": "ideal",
-        |            "description": "iDEAL",
-        |            "amount": {
-        |                "minimum": "0.53",
-        |                "maximum": "50000.00"
-        |            },
-        |            "image": {
-        |                "normal": "https://www.mollie.com/images/payscreen/methods/ideal.png",
-        |                "bigger": "https://www.mollie.com/images/payscreen/methods/ideal%402x.png"
+        |    "count": 13,
+        |    "_embedded": {
+        |        "methods": [
+        |            {
+        |                 "resource": "method",
+        |                 "id": "ideal",
+        |                 "description": "iDEAL",
+        |                 "image": {
+        |                     "size1x": "https://mollie.com/images/payscreen/methods/ideal.png",
+        |                     "size2x": "https://mollie.com/images/payscreen/methods/ideal%402x.png"
+        |                 },
+        |                 "_links": {
+        |                     "self": {
+        |                         "href": "https://api.mollie.com/v2/methods/ideal",
+        |                         "type": "application/hal+json"
+        |                     },
+        |                     "documentation": {
+        |                         "href": "https://mollie.com/en/docs/reference/methods/get",
+        |                         "type": "text/html"
+        |                     }
+        |                 }
         |            }
+        |        ]
+        |    },
+        |    "_links": {
+        |        "self": {
+        |            "href": "https://api.mollie.com/v2/methods",
+        |            "type": "application/hal+json"
         |        },
-        |        {
-        |            "resource": "method",
-        |            "id": "paypal",
-        |            "description": "PayPal",
-        |            "amount": {
-        |                "minimum": "0.13",
-        |                "maximum": "8000.00"
-        |            },
-        |            "image": {
-        |                "normal": "https://www.mollie.com/images/payscreen/methods/paypal.png",
-        |                "bigger": "https://www.mollie.com/images/payscreen/methods/paypal%402x.png"
-        |            }
+        |        "documentation": {
+        |            "href": "https://docs.mollie.com/reference/v2/methods-api/list-methods",
+        |            "type": "text/html"
         |        }
-        |    ]
+        |    }
         |}
       """.stripMargin
 
@@ -66,17 +69,12 @@ class ListMethodsRequestTest extends FunSuite {
     assert(maybeResponse.asOpt.isDefined)
 
     maybeResponse.map { response =>
-      assert(response.totalCount == 2)
-      assert(response.offset == 0)
-      assert(response.count == 2)
+      assert(response.count == 13)
 
-      assert(response.data.size === 2)
+      assert(response.methods.size === 1)
 
-      assert(response.data(0).id == "ideal")
-      assert(response.data(0).description == "iDEAL")
-
-      assert(response.data(1).id == "paypal")
-      assert(response.data(1).description == "PayPal")
+      assert(response.methods(0).id == "ideal")
+      assert(response.methods(0).description == "iDEAL")
     }
   }
 }

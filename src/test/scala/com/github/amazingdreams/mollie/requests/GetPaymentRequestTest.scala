@@ -18,25 +18,37 @@ class GetPaymentRequestTest extends FunSuite {
         |    "resource": "payment",
         |    "id": "tr_WDqYK6vllg",
         |    "mode": "test",
-        |    "createdDatetime": "2018-02-08T16:37:34.0Z",
-        |    "status": "paid",
-        |    "paidDatetime": "2018-02-08T16:42:17.0Z",
-        |    "amount": "35.07",
-        |    "description": "Order 33",
-        |    "method": "ideal",
+        |    "createdAt": "2018-03-20T13:13:37+00:00",
+        |    "amount": {
+        |        "value": "10.00",
+        |        "currency": "EUR"
+        |    },
+        |    "description": "My first payment",
+        |    "method": null,
         |    "metadata": {
-        |        "order_id": "33"
+        |        "order_id": "12345"
         |    },
-        |    "details": {
-        |        "consumerName": "Hr E G H K\u00fcppers en\/of MW M.J. K\u00fcppers-Veeneman",
-        |        "consumerAccount": "NL53INGB0618365937",
-        |        "consumerBic": "INGBNL2A"
-        |    },
-        |    "locale": "nl",
+        |    "status": "open",
+        |    "isCancelable": false,
+        |    "expiresAt": "2018-03-20T13:28:37+00:00",
+        |    "details": null,
         |    "profileId": "pfl_QkEhN94Ba",
-        |    "links": {
-        |        "webhookUrl": "https://webshop.example.org/payments/webhook",
-        |        "redirectUrl": "https://webshop.example.org/order/33/"
+        |    "sequenceType": "oneoff",
+        |    "redirectUrl": "https://webshop.example.org/order/12345/",
+        |    "webhookUrl": "https://webshop.example.org/payments/webhook/",
+        |    "_links": {
+        |        "self": {
+        |            "href": "https://api.mollie.com/v2/payments/tr_WDqYK6vllg",
+        |            "type": "application/hal+json"
+        |        },
+        |        "checkout": {
+        |            "href": "https://www.mollie.com/payscreen/select-method/WDqYK6vllg",
+        |            "type": "text/html"
+        |        },
+        |        "documentation": {
+        |            "href": "https://docs.mollie.com/reference/v2/payments-api/get-payment",
+        |            "type": "text/html"
+        |        }
         |    }
         |}
       """.stripMargin
@@ -45,6 +57,6 @@ class GetPaymentRequestTest extends FunSuite {
     val response = request.responseReads.reads(Json.parse(responseJson)).get
 
     assert(response.id == "tr_WDqYK6vllg")
-    assert(response.metadata.get("order_id") == "33")
+    assert(response.metadata.get("order_id") == "12345")
   }
 }

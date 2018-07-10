@@ -1,55 +1,46 @@
 package com.github.amazingdreams.mollie.objects
 
 import com.github.amazingdreams.mollie.objects.PaymentStatus.PaymentStatus
-import com.github.amazingdreams.mollie.objects.RecurringType.RecurringType
+import com.github.amazingdreams.mollie.objects.SequenceType.SequenceType
 import com.github.amazingdreams.mollie.requests.MollieResponse
-import com.github.amazingdreams.mollie.utils.json.ReadUtils
 import play.api.libs.json._
-import play.api.libs.functional.syntax._
 
 object Payment {
-  import ReadUtils.readBigDecimalFromString
 
   implicit val paymentStatusReads = Reads.enumNameReads(PaymentStatus)
-  implicit val recurringTypeReads = Reads.enumNameReads(RecurringType)
+  implicit val recurringTypeReads = Reads.enumNameReads(SequenceType)
+
+  implicit val paymentLinkReads = Json.reads[PaymentLink]
   implicit val paymentLinksReads = Json.reads[PaymentLinks]
 
-  implicit val paymentReads: Reads[Payment] = (
-    (JsPath \ "id").read[String] and
-    (JsPath \ "status").read[PaymentStatus] and
-    (JsPath \ "amount").read[Either[String, BigDecimal]].map(_.fold(
-      str => BigDecimal(str),
-      bd => bd
-    )) and
-    (JsPath \ "description").read[String] and
-    (JsPath \ "metadata").readNullable[Map[String, String]] and
-    (JsPath \ "customerId").readNullable[String] and
-    (JsPath \ "recurringType").readNullable[RecurringType] and
-    (JsPath \ "subsciptionId").readNullable[String] and
-    (JsPath \ "links").read[PaymentLinks]
-  )(Payment.apply _)
+  implicit val paymentReads = Json.reads[Payment]
 }
 
 case class Payment(id: String,
                    status: PaymentStatus,
-                   amount: BigDecimal,
+                   amount: Amount,
                    description: String,
                    metadata: Option[Map[String, String]] = None,
-                   customerId: Option[String] = None,
-                   recurringType: Option[RecurringType] = None,
-                   subscriptionId: Option[String] = None,
-                   links: PaymentLinks)
+                   profileId: Option[String] = None,
+                   sequenceType: SequenceType,
+                   redirectUrl: String,
+                   webhookUrl: String,
+                   _links: PaymentLinks)
   extends MollieResponse
 
-case class PaymentLinks(paymentUrl: Option[String],
-                        redirectUrl: Option[String],
-                        webhookUrl: Option[String])
+case class PaymentLink(href: String,
+                       `type`: String)
 
-object RecurringType extends Enumeration {
-  type RecurringType = Value
+case class PaymentLinks(self: PaymentLink,
+                        checkout: PaymentLink,
+                        documentation: PaymentLink)
+
+object SequenceType extends Enumeration {
+  type SequenceType = Value
 
   val First = Value("first")
   val Recurring = Value("recurring")
+  val OneOff = Value("oneoff")
 }
 
 object PaymentStatus extends Enumeration {
