@@ -32,7 +32,7 @@ case class PaymentLink(href: String,
                        `type`: String)
 
 case class PaymentLinks(self: PaymentLink,
-                        checkout: PaymentLink,
+                        checkout: Option[PaymentLink],
                         documentation: PaymentLink)
 
 object SequenceType extends Enumeration {

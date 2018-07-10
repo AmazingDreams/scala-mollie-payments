@@ -58,11 +58,13 @@ class MollieClient(apiKey: String, testMode: Boolean = true) {
       .params(mollieRequest.params)
 
     if (mollieRequest.method == RequestMethod.POST) {
+      val postData = Json.stringify(mollieRequest.postData)
+
       localRequest
         .header("content-type", "application/json")
-        .postData(Json.stringify(mollieRequest.postData))
+        .postData(postData)
     } else {
-      localRequest.param("testmode", testMode.toString)
+      localRequest
     }
   }
 
